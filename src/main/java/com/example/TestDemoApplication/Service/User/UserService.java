@@ -1,5 +1,6 @@
-package com.example.TestDemoApplication.Service;
+package com.example.TestDemoApplication.Service.User;
 
+import com.example.TestDemoApplication.DTO.User.UserResetPasswordDto;
 import com.example.TestDemoApplication.DTO.UserRegisterDTO;
 import com.example.TestDemoApplication.Entity.User;
 import com.example.TestDemoApplication.Repository.UserRepository;
@@ -30,7 +31,7 @@ public class UserService {
         }
         User user= new User();
         user.setUserId(dto.getUserId());
-        user.setUsName(dto.getUsName());
+        user.setUsName(dto.getUserName());
         user.setRole(dto.getRole());
         String encryptedpassword= passwordEncoder.encode(dto.getPassword());
         user.setPassword(encryptedpassword);
@@ -38,5 +39,27 @@ public class UserService {
         return "User Registered Successfully";
 
     }
+    public String userResetPassword(UserResetPasswordDto userResetPasswordDto){
+        User user= userRepository.findByuserId(userResetPasswordDto.getUserId());
+        if(user == null){
+            return "User not exist";
+        }
+        String encryptedPassword = passwordEncoder.encode(userResetPasswordDto.getOldPassword());
+
+        if(! passwordEncoder.matches(userResetPasswordDto.getOldPassword(), user.getPassword())){
+            return "Password Missmatched";
+        }
+        if(! userResetPasswordDto.getOldPassword().equals(userResetPasswordDto.getNewCnfPassword())){
+            return "New Password and Confirm Password is not same";
+        }
+        if (!userResetPasswordDto.getNewPassword().equals(userResetPasswordDto.getNewCnfPassword())) {
+            return "New password and Confirm password do not match";
+        }
+        String encryptedPasswoed = passwordEncoder.encode(userResetPasswordDto.getNewPassword());
+        user.setPassword(encryptedPasswoed);
+        userRepository.save(user);
+        return "Password updated successfully";
+    }
+
 
 }

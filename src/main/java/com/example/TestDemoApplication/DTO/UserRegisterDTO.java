@@ -2,10 +2,16 @@ package com.example.TestDemoApplication.DTO;
 
 public class UserRegisterDTO {
     private String userId;
-    private String usName;
+    private String userName;
     private String password;
     private String role;
-
+    private String email;
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
     public String getUserId() {
         return userId;
     }
@@ -14,12 +20,12 @@ public class UserRegisterDTO {
         this.userId = userId;
     }
 
-    public String getUsName() {
-        return usName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsName(String usName) {
-        this.usName = usName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {

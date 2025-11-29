@@ -1,8 +1,8 @@
 package com.example.TestDemoApplication.Controller;
 
+import com.example.TestDemoApplication.DTO.User.UserResetPasswordDto;
 import com.example.TestDemoApplication.DTO.UserRegisterDTO;
-import com.example.TestDemoApplication.Entity.User;
-import com.example.TestDemoApplication.Service.UserService;
+import com.example.TestDemoApplication.Service.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +20,11 @@ public class UserController {
     @PostMapping("/userRegistration")
     public String userRegistration(@RequestBody UserRegisterDTO dto){
         String result= userService.userRegistry(dto);
+        return result;
+    }
+    @PostMapping("/resetPassword")
+    public String resetPassword(@RequestBody UserResetPasswordDto userResetPasswordDto){
+        String result = userService.userResetPassword(userResetPasswordDto);
         return result;
     }
 }
