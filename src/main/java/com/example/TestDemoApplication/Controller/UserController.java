@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class UserController {
+
     @Autowired
     public UserService userService;
 
@@ -26,5 +27,9 @@ public class UserController {
     public String resetPassword(@RequestBody UserResetPasswordDto userResetPasswordDto){
         String result = userService.userResetPassword(userResetPasswordDto);
         return result;
+    }
+    @PostMapping("/addAddress")
+    public String addAddress(){
+        return "address";
     }
 }

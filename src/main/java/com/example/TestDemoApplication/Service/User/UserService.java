@@ -33,6 +33,7 @@ public class UserService {
         user.setUserId(dto.getUserId());
         user.setUsName(dto.getUserName());
         user.setRole(dto.getRole());
+        user.setEmail(dto.getEmail());
         String encryptedpassword= passwordEncoder.encode(dto.getPassword());
         user.setPassword(encryptedpassword);
         userRepository.save(user);
@@ -55,6 +56,10 @@ public class UserService {
         if (!userResetPasswordDto.getNewPassword().equals(userResetPasswordDto.getNewCnfPassword())) {
             return "New password and Confirm password do not match";
         }
+        if (passwordEncoder.matches(userResetPasswordDto.getNewPassword(), user.getPassword())) {
+            return "New password cannot be same as old password";
+        }
+
         String encryptedPasswoed = passwordEncoder.encode(userResetPasswordDto.getNewPassword());
         user.setPassword(encryptedPasswoed);
         userRepository.save(user);
