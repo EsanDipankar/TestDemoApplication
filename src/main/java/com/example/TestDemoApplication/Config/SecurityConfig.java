@@ -20,19 +20,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/userRegistration",
-                                "/api/login",
-                                "/api/**"
-                        ).permitAll() // ✅ Correct paths
+                        .requestMatchers("/api/login","/api/userRegistration")
+                        .permitAll() // ✅ Correct paths
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

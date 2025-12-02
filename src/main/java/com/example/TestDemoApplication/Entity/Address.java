@@ -7,13 +7,23 @@ import jakarta.persistence.*;
 @Table(name="Address")
 public class Address {
     @Id
-    private Long id;
+    private String id;
 
-    public Long getId() {
+    @JoinColumn(name="userId")
+    private String userId;
+    private String addressLine1;
+    private String addressLine2;
+    private String city;
+    private String state;
+    private String pincode;
+    private String addressType; // Home / Office / Other
+    private boolean isDefault;
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -81,16 +91,8 @@ public class Address {
         isDefault = aDefault;
     }
 
-    @ManyToOne
-    @JoinColumn(name="userId")
-    private String userId;
-    private String addressLine1;
-    private String addressLine2;
-    private String city;
-    private String state;
-    private String pincode;
-    private String addressType; // Home / Office / Other
-    private boolean isDefault;
+
+
 
 
 }
