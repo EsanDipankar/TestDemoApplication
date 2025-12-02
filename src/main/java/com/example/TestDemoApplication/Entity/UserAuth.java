@@ -1,13 +1,23 @@
-package com.example.TestDemoApplication.Auth;
+package com.example.TestDemoApplication.Entity;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "admin")
 
 public class UserAuth {
     @Id
     private String userId;
-    private String usName;
+    private String userName;
     private String password;
     private String role;
+    private String email;
+
+    public String getEmail() {return email;}
+
+    public void setEmail(String email) {this.email = email;}
 
     public String getRole() {
         return role;
@@ -25,12 +35,12 @@ public class UserAuth {
         this.userId = userId;
     }
 
-    public String getUsName() {
-        return usName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsName(String usName) {
-        this.usName = usName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -40,5 +50,4 @@ public class UserAuth {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }
