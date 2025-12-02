@@ -31,7 +31,7 @@ public class UserService {
         }
         User user= new User();
         user.setUserId(dto.getUserId());
-        user.setUsName(dto.getUserName());
+        user.setUserName(dto.getUserName());
         user.setRole(dto.getRole());
         user.setEmail(dto.getEmail());
         String encryptedpassword= passwordEncoder.encode(dto.getPassword());

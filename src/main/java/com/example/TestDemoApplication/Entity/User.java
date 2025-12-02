@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class User {
     @Id
     private String userId;
-    private String usName;
+    private String userName;
     private String password;
     private String role;
     private String email;
@@ -35,12 +35,12 @@ public class User {
         this.userId = userId;
     }
 
-    public String getUsName() {
-        return usName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsName(String usName) {
-        this.usName = usName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
