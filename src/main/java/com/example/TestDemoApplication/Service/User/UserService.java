@@ -2,7 +2,7 @@ package com.example.TestDemoApplication.Service.User;
 
 import com.example.TestDemoApplication.Config.AESUtil;
 import com.example.TestDemoApplication.DTO.User.UserResetPasswordDto;
-import com.example.TestDemoApplication.DTO.UserRegisterDTO;
+import com.example.TestDemoApplication.DTO.User.UserRegisterDTO;
 import com.example.TestDemoApplication.Entity.UserAuth;
 import com.example.TestDemoApplication.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

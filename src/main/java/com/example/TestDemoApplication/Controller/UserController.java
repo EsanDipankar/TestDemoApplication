@@ -1,7 +1,7 @@
 package com.example.TestDemoApplication.Controller;
 
 import com.example.TestDemoApplication.DTO.User.UserResetPasswordDto;
-import com.example.TestDemoApplication.DTO.UserRegisterDTO;
+import com.example.TestDemoApplication.DTO.User.UserRegisterDTO;
 import com.example.TestDemoApplication.Service.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

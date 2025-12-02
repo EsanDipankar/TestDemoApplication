@@ -1,4 +1,4 @@
-package com.example.TestDemoApplication.DTO;
+package com.example.TestDemoApplication.DTO.User;
 
 public class UserRegisterDTO {
     private String userId;
