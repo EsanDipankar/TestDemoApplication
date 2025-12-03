@@ -8,7 +8,27 @@ public class ProductDTO {
     private String productName;
     private String category;
     private String subCategory;
+    private Long price;
+    private String sellerName;
+    private String modelName;
+    private String modelNumber;
+    private String type;
+    private String color;
+    private Long width;
+    private Long height;
+    private Long depth;
+    private Long rating;
+    private Long discount;
+    private Long quantity;
+    private String sellerId;
 
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
+    }
     public Long getId() {
         return Id;
     }
@@ -137,18 +157,7 @@ public class ProductDTO {
         this.quantity = quantity;
     }
 
-    private Long price;
-    private String sellerName;
-    private String modelName;
-    private String modelNumber;
-    private String type;
-    private String color;
-    private Long width;
-    private Long height;
-    private Long depth;
-    private Long rating;
-    private Long discount;
-    private Long quantity;
+
 
 
 }

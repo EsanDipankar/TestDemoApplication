@@ -7,6 +7,34 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="Product")
 public class Product {
+    @Id
+    private Long Id;
+
+    private String productName;
+    private String category;
+    private String subCategory;
+    private Long price;
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    private String sellerId;
+    private String sellerName;
+    private String modelName;
+    private String modelNumber;
+    private String type;
+    private String color;
+    private Long width;
+    private Long height;
+    private Long depth;
+    private Long rating;
+    private Long discount;
+    private Long quantity;
     public Long getId() {
         return Id;
     }
@@ -135,22 +163,5 @@ public class Product {
         this.quantity = quantity;
     }
 
-    @Id
-    private Long Id;
 
-    private String productName;
-    private String category;
-    private String subCategory;
-    private Long price;
-    private String sellerName;
-    private String modelName;
-    private String modelNumber;
-    private String type;
-    private String color;
-    private Long width;
-    private Long height;
-    private Long depth;
-    private Long rating;
-    private Long discount;
-    private Long quantity;
 }
