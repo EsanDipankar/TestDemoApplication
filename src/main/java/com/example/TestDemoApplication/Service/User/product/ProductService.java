@@ -15,18 +15,13 @@ public class ProductService {
 
     @Autowired
     private Product product;
-    @Autowired
-    private AESUtil aesUtil;
 
     public String dataInsert(ProductDTO dto){
     try{
-        Product productentity= new Product();
-        productentity.setProductName(AESUtil.decrypt(dto.getProductName()));
-        productentity.setCategory(AESUtil.decrypt(dto.getCategory()));
-        productentity.setPrice(Long.parseLong(AESUtil.decrypt(String.valueOf(dto.getPrice()))));
-        productentity.setId(Long.parseLong(AESUtil.decrypt(String.valueOf(dto.getId()))));
-
-
+        Product productEntity= new Product();
+        productEntity.setId(Long.parseLong(AESUtil.decrypt(String.valueOf(dto.getId()))));
+        productEntity.setProductName(AESUtil.decrypt(dto.getProductName()));
+        productEntity.setPrice(Long.parseLong(AESUtil.decrypt(String.valueOf(dto.getPrice()))));
 
     }catch (Exception e){
 
