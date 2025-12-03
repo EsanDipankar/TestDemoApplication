@@ -26,4 +26,10 @@ public class ProductController {
     public ProductDTO getProductById(@RequestParam Long productId) {
         return productService.getProductById(productId);
     }
+
+
+    @DeleteMapping("/deleteProductById")
+    public String deleteProductById(@RequestParam String productId){
+        return productService.deleteProduct(productId);
+    }
 }

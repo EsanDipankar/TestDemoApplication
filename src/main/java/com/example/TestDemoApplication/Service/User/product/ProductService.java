@@ -17,7 +17,7 @@ public class ProductService {
     // --------------------- INSERT --------------------------
     public String dataInsert(ProductDTO dto) {
         try {
-            Long id = Long.parseLong(AESUtil.decrypt(dto.getId()));
+            String id = AESUtil.decrypt(dto.getId());
             Long price = Long.parseLong(AESUtil.decrypt(dto.getPrice()));
             Long width = Long.parseLong(AESUtil.decrypt(dto.getWidth()));
             Long height = Long.parseLong(AESUtil.decrypt(dto.getHeight()));
@@ -153,5 +153,11 @@ public class ProductService {
             throw new RuntimeException("Error encrypting product data: " + e.getMessage());
         }
     }
-
+    public String deleteProduct(String productId) {
+        if (!productRepository.existsById(productId)) {
+            return "Product not found";
+        }
+        productRepository.deleteById(productId);
+        return "Product Deleted";
+    }
 }
