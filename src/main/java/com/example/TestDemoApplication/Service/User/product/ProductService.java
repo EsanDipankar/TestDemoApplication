@@ -7,6 +7,9 @@ import com.example.TestDemoApplication.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -14,36 +17,35 @@ public class ProductService {
     @Autowired
     public ProductRepository productRepository;
 
-    // --------------------- INSERT --------------------------
+    // ---------------------------------------------------------
+    // INSERT PRODUCT
+    // ---------------------------------------------------------
     public String dataInsert(ProductDTO dto) {
         try {
-            String id = AESUtil.decrypt(dto.getId());
-            Long price = Long.parseLong(AESUtil.decrypt(dto.getPrice()));
-            Long width = Long.parseLong(AESUtil.decrypt(dto.getWidth()));
-            Long height = Long.parseLong(AESUtil.decrypt(dto.getHeight()));
-            Long depth = Long.parseLong(AESUtil.decrypt(dto.getDepth()));
-            Long rating = Long.parseLong(AESUtil.decrypt(dto.getRating()));
-            Long discount = Long.parseLong(AESUtil.decrypt(dto.getDiscount()));
-            Long quantity = Long.parseLong(AESUtil.decrypt(dto.getQuantity()));
-
             Product product = new Product();
-            product.setId(id);
+
+            // ID (String)
+            product.setId(AESUtil.decrypt(dto.getId()));
+
+            // Strings
             product.setProductName(AESUtil.decrypt(dto.getProductName()));
             product.setCategory(AESUtil.decrypt(dto.getCategory()));
             product.setSubCategory(AESUtil.decrypt(dto.getSubCategory()));
-            product.setPrice(price);
             product.setSellerName(AESUtil.decrypt(dto.getSellerName()));
             product.setSellerId(AESUtil.decrypt(dto.getSellerId()));
             product.setModelNumber(AESUtil.decrypt(dto.getModelNumber()));
             product.setModelName(AESUtil.decrypt(dto.getModelName()));
             product.setType(AESUtil.decrypt(dto.getType()));
             product.setColor(AESUtil.decrypt(dto.getColor()));
-            product.setWidth(width);
-            product.setHeight(height);
-            product.setDepth(depth);
-            product.setRating(rating);
-            product.setDiscount(discount);
-            product.setQuantity(quantity);
+
+            // Numbers (decrypt → parseLong)
+            product.setPrice(Long.parseLong(AESUtil.decrypt(dto.getPrice())));
+            product.setWidth(Long.parseLong(AESUtil.decrypt(dto.getWidth())));
+            product.setHeight(Long.parseLong(AESUtil.decrypt(dto.getHeight())));
+            product.setDepth(Long.parseLong(AESUtil.decrypt(dto.getDepth())));
+            product.setRating(Long.parseLong(AESUtil.decrypt(dto.getRating())));
+            product.setDiscount(Long.parseLong(AESUtil.decrypt(dto.getDiscount())));
+            product.setQuantity(Long.parseLong(AESUtil.decrypt(dto.getQuantity())));
 
             productRepository.save(product);
             return "Product added successfully";
@@ -53,15 +55,22 @@ public class ProductService {
         }
     }
 
-    // --------------------- UPDATE --------------------------
+    // ---------------------------------------------------------
+    // UPDATE PRODUCT (Partial Update Allowed)
+    // ---------------------------------------------------------
     public String dataUpdate(ProductDTO dto) {
         try {
-            Long id = Long.parseLong(AESUtil.decrypt(dto.getId()));
-            Product product = productRepository.findById(id);
+            String id = AESUtil.decrypt(dto.getId());
 
-            if (product == null) {
+            Optional<Product> productOpt = productRepository.findById(id);
+
+            if (productOpt.isEmpty()) {
                 return "Product not found";
             }
+
+            Product product = productOpt.get();
+
+            // Update only non-null fields
 
             if (dto.getProductName() != null)
                 product.setProductName(AESUtil.decrypt(dto.getProductName()));
@@ -113,23 +122,30 @@ public class ProductService {
 
             productRepository.save(product);
             return "Product updated successfully";
+
         } catch (Exception e) {
             return "Invalid product update details: " + e.getMessage();
         }
     }
 
-    public ProductDTO getProductById(Long productId) {
+    // ---------------------------------------------------------
+    // GET PRODUCT BY ID (returns encrypted DTO)
+    // ---------------------------------------------------------
+    public ProductDTO getProductById(String encryptedProductId) {
         try {
-            Product product = productRepository.findById(productId);
+            String id = AESUtil.decrypt(encryptedProductId);
 
-            if (product == null) {
-                return null;  // or throw exception
+            Optional<Product> productOpt = productRepository.findById(id);
+
+            if (productOpt.isEmpty()) {
+                return null;
             }
 
+            Product product = productOpt.get();
             ProductDTO dto = new ProductDTO();
 
-            // Encrypt all fields before returning
-            dto.setId(AESUtil.encrypt(String.valueOf(product.getId())));
+            // Encrypt before sending
+            dto.setId(AESUtil.encrypt(product.getId()));
             dto.setProductName(AESUtil.encrypt(product.getProductName()));
             dto.setCategory(AESUtil.encrypt(product.getCategory()));
             dto.setSubCategory(AESUtil.encrypt(product.getSubCategory()));
@@ -146,18 +162,59 @@ public class ProductService {
             dto.setRating(AESUtil.encrypt(String.valueOf(product.getRating())));
             dto.setDiscount(AESUtil.encrypt(String.valueOf(product.getDiscount())));
             dto.setQuantity(AESUtil.encrypt(String.valueOf(product.getQuantity())));
-
             return dto;
-
         } catch (Exception e) {
-            throw new RuntimeException("Error encrypting product data: " + e.getMessage());
+            throw new RuntimeException("Error fetching product: " + e.getMessage());
         }
     }
     public String deleteProduct(String productId) {
-        if (!productRepository.existsById(productId)) {
-            return "Product not found";
+        try {
+            String id = AESUtil.decrypt(productId);
+            Optional<Product> product = productRepository.findById(id);
+            if (product.isEmpty()) {
+                return "Product already deleted";
+            }
+            productRepository.deleteById(id);
+            return "Product deleted Successfully";
+
+        } catch (Exception e) {
+            return "Invalid product id" + e.getMessage();
         }
-        productRepository.deleteById(productId);
-        return "Product Deleted";
     }
+    private ProductDTO convertToEncryptedDTO(Product p) {
+        ProductDTO dto = new ProductDTO();
+        try{
+            dto.setId(AESUtil.encrypt(String.valueOf(p.getId())));
+            dto.setProductName(AESUtil.encrypt(p.getProductName()));
+            dto.setCategory(AESUtil.encrypt(p.getCategory()));
+            dto.setSubCategory(AESUtil.encrypt(p.getSubCategory()));
+            dto.setPrice(AESUtil.encrypt(String.valueOf(p.getPrice())));
+            dto.setSellerName(AESUtil.encrypt(p.getSellerName()));
+            dto.setSellerId(AESUtil.encrypt(p.getSellerId()));
+            dto.setModelNumber(AESUtil.encrypt(p.getModelNumber()));
+            dto.setModelName(AESUtil.encrypt(p.getModelName()));
+            dto.setType(AESUtil.encrypt(p.getType()));
+            dto.setColor(AESUtil.encrypt(p.getColor()));
+            dto.setWidth(AESUtil.encrypt(String.valueOf(p.getWidth())));
+            dto.setHeight(AESUtil.encrypt(String.valueOf(p.getHeight())));
+            dto.setDepth(AESUtil.encrypt(String.valueOf(p.getDepth())));
+            dto.setRating(AESUtil.encrypt(String.valueOf(p.getRating())));
+            dto.setDiscount(AESUtil.encrypt(String.valueOf(p.getDiscount())));
+            dto.setQuantity(AESUtil.encrypt(String.valueOf(p.getQuantity())));
+            return dto;
+        }catch(Exception e){
+            return  dto;
+        }
+    }
+
+    public List<ProductDTO> searchProducts(String keyword){
+        List<Product> productList= new ArrayList<>();
+        productList.addAll(productRepository.findByProductNameContainingIgnoreCase(keyword));
+        productList.addAll(productRepository.findByCategoryContainingIgnoreCase(keyword));
+        productList.addAll(productRepository.findBySubCategoryContainingIgnoreCase(keyword));
+        productList=productList.stream().distinct().toList();
+
+        return productList.stream().map(product-> convertToEncryptedDTO(product)).toList();
+    }
+
 }
