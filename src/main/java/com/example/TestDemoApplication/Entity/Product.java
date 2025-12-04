@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 @Table(name="Product")
 public class Product {
     @Id
-    private Long Id;
+    private String Id;
 
     private String productName;
     private String category;
@@ -35,11 +35,11 @@ public class Product {
     private Long rating;
     private Long discount;
     private Long quantity;
-    public Long getId() {
+    public String getId() {
         return Id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         Id = id;
     }
 
