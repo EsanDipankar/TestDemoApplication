@@ -2,7 +2,6 @@ package com.example.TestDemoApplication.Service.Cart;
 
 import com.example.TestDemoApplication.Config.AESUtil;
 import com.example.TestDemoApplication.DTO.Cart.CartDto;
-import com.example.TestDemoApplication.DTO.User.UserRegisterDTO;
 import com.example.TestDemoApplication.Entity.Cart;
 import com.example.TestDemoApplication.Entity.UserAuth;
 import com.example.TestDemoApplication.Repository.CartRepository;
@@ -10,7 +9,6 @@ import com.example.TestDemoApplication.Repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -117,7 +115,7 @@ public class CartService {
             productId= AESUtil.decrypt(productId);
             Optional<Cart> cart= cartRepository.findByCartIdAndProductId(cartId,productId);
             if(cart.isPresent()){
-                cartRepository.deleByCartIdAndProductId(cartId, productId);
+                cartRepository.deleteByCartIdAndProductId(cartId, productId);
                 return "Product deleted from cart ";
             }else{
                 return "Product or Cart is not available";
@@ -126,5 +124,15 @@ public class CartService {
             return "Invalid product id or cartid"+e.getMessage();
         }
     }
+    public boolean decereseQuantity(String cartId, String productId){
+        try{
+            cartId= AESUtil.decrypt(cartId);
+            productId= AESUtil.decrypt(productId);
+            Optional<Cart> cart= cartRepository.findByCartIdAndProductId(cartId,productId);
 
+        }catch(Exception e){
+            return true;
+        }
+        return true;
+    }
 }
