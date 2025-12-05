@@ -1,8 +1,7 @@
 package com.example.TestDemoApplication.Controller.Product;
 
 import com.example.TestDemoApplication.DTO.product.ProductDTO;
-import com.example.TestDemoApplication.Entity.Product;
-import com.example.TestDemoApplication.Service.User.product.ProductService;
+import com.example.TestDemoApplication.Service.Product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

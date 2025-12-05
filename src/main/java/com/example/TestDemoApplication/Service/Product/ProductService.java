@@ -1,4 +1,4 @@
-package com.example.TestDemoApplication.Service.User.product;
+package com.example.TestDemoApplication.Service.Product;
 
 import com.example.TestDemoApplication.Config.AESUtil;
 import com.example.TestDemoApplication.DTO.product.ProductDTO;
