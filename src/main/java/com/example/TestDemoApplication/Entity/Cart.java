@@ -1,11 +1,18 @@
 package com.example.TestDemoApplication.Entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Cart")
 public class Cart {
+    @Id
+    private String cartId;
+    private String userId;
+    private String productId;
+    private Long quantity;
+    private Long price;
     public String getCartId() {
         return cartId;
     }
@@ -46,9 +53,5 @@ public class Cart {
         this.price = price;
     }
 
-    private String cartId;
-    private String userId;
-    private String productId;
-    private Long quantity;
-    private Long price;
+
 }

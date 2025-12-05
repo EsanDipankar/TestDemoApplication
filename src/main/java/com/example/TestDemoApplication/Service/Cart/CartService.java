@@ -24,6 +24,7 @@ public class CartService {
     @Autowired
     private UserRepository userRepository;
 
+    @org.jetbrains.annotations.NotNull
     private String generateCartId() {
         int length = 31;
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -109,4 +110,21 @@ public class CartService {
         return "Item added in your cart";
 
     }
+
+    public String deleteItemFromCart(String cartId, String productId) {
+        try{
+            cartId= AESUtil.decrypt(cartId);
+            productId= AESUtil.decrypt(productId);
+            Optional<Cart> cart= cartRepository.findByCartIdAndProductId(cartId,productId);
+            if(cart.isPresent()){
+                cartRepository.deleByCartIdAndProductId(cartId, productId);
+                return "Product deleted from cart ";
+            }else{
+                return "Product or Cart is not available";
+            }
+        }catch(Exception e){
+            return "Invalid product id or cartid"+e.getMessage();
+        }
+    }
+    public String
 }
