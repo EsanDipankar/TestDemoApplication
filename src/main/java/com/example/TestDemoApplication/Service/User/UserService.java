@@ -3,12 +3,15 @@ package com.example.TestDemoApplication.Service.User;
 import com.example.TestDemoApplication.Config.AESUtil;
 import com.example.TestDemoApplication.DTO.User.UserResetPasswordDto;
 import com.example.TestDemoApplication.DTO.User.UserRegisterDTO;
+import com.example.TestDemoApplication.Entity.Cart;
 import com.example.TestDemoApplication.Entity.UserAuth;
+import com.example.TestDemoApplication.Repository.CartRepository;
 import com.example.TestDemoApplication.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -16,6 +19,8 @@ public class UserService {
 
     @Autowired
     public UserRepository userRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
     @Autowired
     public PasswordEncoder passwordEncoder;
@@ -44,7 +49,7 @@ public class UserService {
 //
 //    }
 private String generateCartId() {
-    int length = 311;
+    int length = 31;
     String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     StringBuilder sb = new StringBuilder();
     Random random = new Random();
@@ -53,6 +58,17 @@ private String generateCartId() {
     }
     return sb.toString();
 }
+
+    private String validateCartId(String cartId) {
+        Optional<Cart> cartEntity = cartRepository.findById(cartId);
+        Optional<UserAuth> userAuthEntity= userRepository.findById(cartId);
+        while(cartEntity.isPresent() || userAuthEntity.isPresent()) {
+            cartId = generateCartId();
+            cartEntity = cartRepository.findById(cartId);
+            userAuthEntity=userRepository.findById(cartId);
+        }
+        return cartId;
+    }
 public String userRegistry(UserRegisterDTO dto){
     try {
 
