@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
+
 @Service
 public class UserService {
 
@@ -41,6 +43,16 @@ public class UserService {
 //        return "User Registered Successfully";
 //
 //    }
+private String generateCartId() {
+    int length = 311;
+    String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    StringBuilder sb = new StringBuilder();
+    Random random = new Random();
+    for (int i = 0; i < length; i++) {
+        sb.append(chars.charAt(random.nextInt(chars.length())));
+    }
+    return sb.toString();
+}
 public String userRegistry(UserRegisterDTO dto){
     try {
 
@@ -50,7 +62,7 @@ public String userRegistry(UserRegisterDTO dto){
         String email = AESUtil.decrypt(dto.getEmail());
         String role = AESUtil.decrypt(dto.getRole());
         String password = AESUtil.decrypt(dto.getPassword());
-
+        String cartId= generateCartId();
         UserAuth existingUserAuth = userRepository.findByuserId(userId);
         if(existingUserAuth != null){
             return "User already exist";
@@ -61,6 +73,7 @@ public String userRegistry(UserRegisterDTO dto){
         userAuth.setUserName(userName);
         userAuth.setRole(role);
         userAuth.setEmail(email);
+        userAuth.setCartId(cartId);
 
         // Password hashing (not encryption)
         userAuth.setPassword(passwordEncoder.encode(password));

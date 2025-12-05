@@ -6,6 +6,16 @@ public class UserRegisterDTO {
     private String password;
     private String role;
     private String email;
+
+    public String getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(String cartId) {
+        this.cartId = cartId;
+    }
+
+    private String cartId;
     public String getEmail() {
         return email;
     }

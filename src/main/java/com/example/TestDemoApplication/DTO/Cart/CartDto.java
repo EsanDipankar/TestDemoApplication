@@ -1,11 +1,6 @@
-package com.example.TestDemoApplication.Entity;
+package com.example.TestDemoApplication.DTO.Cart;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "Cart")
-public class Cart {
+public class CartDto {
     public String getCartId() {
         return cartId;
     }
