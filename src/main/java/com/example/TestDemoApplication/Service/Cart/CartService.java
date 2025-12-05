@@ -25,7 +25,7 @@ public class CartService {
     private UserRepository userRepository;
 
     private String generateCartId() {
-        int length = 311;
+        int length = 31;
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -33,6 +33,17 @@ public class CartService {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         return sb.toString();
+    }
+
+    private String validateCartId(String cartId) {
+        Optional<Cart> cartEntity = cartRepository.findById(cartId);
+        Optional<UserAuth> userAuthEntity= userRepository.findById(cartId);
+        while(cartEntity.isPresent() || userAuthEntity.isPresent()) {
+            cartId = generateCartId();
+            cartEntity = cartRepository.findById(cartId);
+            userAuthEntity=userRepository.findById(cartId);
+        }
+        return cartId;
     }
 
     public String addInCart(CartDto dto, HttpServletRequest request, HttpServletResponse response){
@@ -52,7 +63,9 @@ public class CartService {
                 }
             }
             if(cartId == null && userId== null){
-                cartId=generateCartId();
+                // Item  add for first time guest.
+                cartId=validateCartId(generateCartId());
+
                 cart.setCartId(cartId);
                 cart.setProductId(productId);
                 cart.setUserId(userId);
@@ -62,6 +75,7 @@ public class CartService {
             }else if(cartId == null && userId != null){
                 Optional<UserAuth> userOptional = userRepository.findById(userId);
                 if(userOptional != null){
+                    // Item add for regular User
                     UserAuth user = userOptional.get();
                     cartId= user.getCartId();
                     cart.setProductId(productId);
@@ -71,18 +85,28 @@ public class CartService {
                     cartRepository.save(cart);
                 }
             } else if (cartId != null) {
-                cart.setCartId(cartId);
-                cart.setProductId(productId);
-                cart.setUserId(userId);
-                cart.setQuantity(quantity);
-                cart.setPrice(price);
-                cartRepository.save(cart);
-            }
+                Optional<Cart> existingCartItem = cartRepository.findByCartIdAndProductId(cartId, productId);
+                if (existingCartItem.isPresent()) {
+                    // Product already exists in cart → update quantity
+                    Cart cartq = existingCartItem.get();
+                    Long currentQty = cartq.getQuantity();
+                    cartq.setQuantity(currentQty + quantity);   // add quantity to existing one
+                    cartRepository.save(cart);
+                }else{
+                    // item add for Guest
+                    cart.setCartId(cartId);
+                    cart.setProductId(productId);
+                    cart.setUserId(userId);
+                    cart.setQuantity(quantity);
+                    cart.setPrice(price);
+                    cartRepository.save(cart);
+                }
 
+            }
         }catch(Exception e){
 
         }
-        return "";
+        return "Item added in your cart";
 
     }
 }
