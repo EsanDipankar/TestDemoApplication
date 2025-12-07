@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -35,18 +37,16 @@ public class CartService {
         }
         return sb.toString();
     }
-
     private String validateCartId(String cartId) {
-        Optional<Cart> cartEntity = cartRepository.findById(cartId);
+        List<Cart> cartEntity = cartRepository.findByCartId(cartId);
         Optional<UserAuth> userAuthEntity= userRepository.findById(cartId);
-        while(cartEntity.isPresent() || userAuthEntity.isPresent()) {
+        while(!cartEntity.isEmpty() || userAuthEntity.isPresent()) {
             cartId = generateCartId();
-            cartEntity = cartRepository.findById(cartId);
+            cartEntity = cartRepository.findByCartId(cartId);;
             userAuthEntity=userRepository.findById(cartId);
         }
         return cartId;
     }
-
     public String addInCart(CartDto dto, HttpServletRequest request, HttpServletResponse response){
         try{
             Cart cart= new Cart();
@@ -58,7 +58,7 @@ public class CartService {
             if(request.getCookies()!=null){
                 for(Cookie cookie: request.getCookies()){
                     if("Cart Id".equals(cookie.getName())){
-                        cartId=cookie.getName();
+                        cartId = cookie.getValue();
                         break;
                     }
                 }
@@ -92,7 +92,7 @@ public class CartService {
                     Cart cartq = existingCartItem.get();
                     Long currentQty = cartq.getQuantity();
                     cartq.setQuantity(currentQty + quantity);   // add quantity to existing one
-                    cartRepository.save(cart);
+                    cartRepository.save(cartq);
                 }else{
                     // item add for Guest
                     cart.setCartId(cartId);
@@ -105,10 +105,8 @@ public class CartService {
 
             }
         }catch(Exception e){
-
         }
         return "Item added in your cart";
-
     }
 
     public String deleteItemFromCart(String cartId, String productId) {
@@ -117,7 +115,7 @@ public class CartService {
             productId= AESUtil.decrypt(productId);
             Optional<Cart> cart= cartRepository.findByCartIdAndProductId(cartId,productId);
             if(cart.isPresent()){
-                cartRepository.deleByCartIdAndProductId(cartId, productId);
+                cartRepository.deleteByCartIdAndProductId(cartId, productId);
                 return "Product deleted from cart ";
             }else{
                 return "Product or Cart is not available";
@@ -127,4 +125,12 @@ public class CartService {
         }
     }
 
+    public List<Cart> getCarts(String cartId) {
+        try{
+            cartId = AESUtil.decrypt(cartId);
+        }catch(Exception e){
+
+        }
+        return cartRepository.findByCartId(cartId);
+    }
 }
