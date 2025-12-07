@@ -58,5 +58,29 @@ public class ImageService {
             throw new RuntimeException("Failed to upload images: " + e.getMessage());
         }
     }
+
+    public List<String> getImages(String encryptedProductId) {
+        try {
+            String productId = AESUtil.decrypt(encryptedProductId);
+
+            List<ImageEntity> images = imageRepository.findByProductId(productId);
+
+            List<String> imageUrls = new ArrayList<>();
+
+            for (ImageEntity image : images) {
+                String fileName = image.getImageName();
+
+                // Create URL for frontend
+                String imageUrl = "http://localhost:8080/uploads/products/" + productId + "/" + fileName;
+
+                imageUrls.add(imageUrl);
+            }
+            return imageUrls;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch images: " + e.getMessage());
+        }
+    }
+
 }
 

@@ -1,21 +1,31 @@
 package com.example.TestDemoApplication.Service.Product;
 
 import com.example.TestDemoApplication.Config.AESUtil;
+import com.example.TestDemoApplication.DTO.Image.ImageDTO;
 import com.example.TestDemoApplication.DTO.product.ProductDTO;
+import com.example.TestDemoApplication.Entity.ImageEntity;
 import com.example.TestDemoApplication.Entity.Product;
+import com.example.TestDemoApplication.Entity.ProductResponseDTO;
+import com.example.TestDemoApplication.Repository.ImageRepository;
 import com.example.TestDemoApplication.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
 
     @Autowired
     public ProductRepository productRepository;
+    @Autowired
+    public ImageRepository imageRepository;
+    @Autowired
+    public ProductResponseDTO productResponseDTO;
 
     // ---------------------------------------------------------
     // INSERT PRODUCT
@@ -215,6 +225,45 @@ public class ProductService {
         productList=productList.stream().distinct().toList();
 
         return productList.stream().map(product-> convertToEncryptedDTO(product)).toList();
+    }
+    public List<ProductResponseDTO>  getProduct(){
+        List<Product> productList= productRepository.findAll();
+        List<ProductResponseDTO> result= new ArrayList<>();
+        for(Product product: productList){
+            ProductResponseDTO response = new ProductResponseDTO();
+            ProductDTO dto = convertToProductDTO(product);
+
+            List<ImageEntity> images = imageRepository.findByProductId(product.getId());
+            List<ImageDTO> imageDTOs = images.stream()
+                    .map(img -> new ImageDTO(img.getId(), img.getProductId(), img.getImageName(), img.getSortOrder()))
+                    .collect(Collectors.toList());
+            response.setProduct(dto);
+            response.setImages(imageDTOs);
+            result.add(response);
+        }
+        return result;
+    }
+
+    private ProductDTO convertToProductDTO(Product product) {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(product.getId());
+        dto.setProductName(product.getProductName());
+        dto.setCategory(product.getCategory());
+        dto.setSubCategory(product.getSubCategory());
+        dto.setPrice(String.valueOf(product.getPrice()));
+        dto.setSellerName(product.getSellerName());
+        dto.setSellerId(product.getSellerId());
+        dto.setModelNumber(product.getModelNumber());
+        dto.setModelName(product.getModelName());
+        dto.setType(product.getType());
+        dto.setColor(product.getColor());
+        dto.setWidth(String.valueOf(product.getWidth()));
+        dto.setHeight(String.valueOf(product.getHeight()));
+        dto.setDepth(String.valueOf(product.getDepth()));
+        dto.setQuantity(String.valueOf(product.getQuantity()));
+        dto.setDiscount(String.valueOf(product.getDiscount()));
+        dto.setRating(String.valueOf(product.getRating()));
+        return  dto;
     }
 
 }

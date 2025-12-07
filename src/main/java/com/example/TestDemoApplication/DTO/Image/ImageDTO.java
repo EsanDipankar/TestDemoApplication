@@ -7,6 +7,9 @@ public class ImageDTO {
 
     private String imageName;
 
+    public ImageDTO(Long id, String productId, String imageName, Integer sortOrder) {
+    }
+
     public Integer getSortOrder() {
         return sortOrder;
     }

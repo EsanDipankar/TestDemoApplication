@@ -1,6 +1,8 @@
 package com.example.TestDemoApplication.Controller.Product;
 
 import com.example.TestDemoApplication.DTO.product.ProductDTO;
+import com.example.TestDemoApplication.Entity.Product;
+import com.example.TestDemoApplication.Entity.ProductResponseDTO;
 import com.example.TestDemoApplication.Service.Product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +37,14 @@ public class ProductController {
     public String deleteProductById(@RequestParam String productId){
         return productService.deleteProduct(productId);
     }
+
     @GetMapping("/search")
     public List<ProductDTO> searchProducts(@RequestParam String query){
         return productService.searchProducts(query);
+    }
+
+    @GetMapping("/getAllPrduct")
+    public List<ProductResponseDTO> getAllProduct(){
+        return productService.getProduct();
     }
 }
