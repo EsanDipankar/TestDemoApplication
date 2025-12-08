@@ -20,14 +20,12 @@ public class ProductController {
 
     @RequestMapping("/addProduct")
     public String addProduct(@RequestBody ProductDTO pdto){
-        String add= productService.dataInsert(pdto);
-        return add;
+        return productService.dataInsert(pdto);
     }
 
     @RequestMapping("/updateProduct")
     public String updateProduct(@RequestBody ProductDTO pdto){
-        String updatep= productService.dataUpdate(pdto);
-        return updatep;
+        return  productService.dataUpdate(pdto);
     }
 
     @GetMapping("/getProductById")
@@ -70,6 +68,6 @@ public class ProductController {
         }catch(Exception e){
             return ResponseEntity.badRequest().body("Invalid Price");
         }
-
     }
+
 }

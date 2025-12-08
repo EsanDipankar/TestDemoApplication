@@ -24,8 +24,7 @@ public class ProductService {
     public ProductRepository productRepository;
     @Autowired
     public ImageRepository imageRepository;
-    @Autowired
-    public ProductResponseDTO productResponseDTO;
+
 
     // ---------------------------------------------------------
     // INSERT PRODUCT

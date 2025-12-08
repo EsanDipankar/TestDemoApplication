@@ -1,5 +1,6 @@
 package com.example.TestDemoApplication.Controller.Image;
 
+import com.example.TestDemoApplication.Config.AESUtil;
 import com.example.TestDemoApplication.Service.Image.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,16 @@ public class ImageController {
     @GetMapping("/get-images")
     public List<String> getImages(@RequestParam("productId") String encryptedProductId) {
         return imageService.getImages(encryptedProductId);
+    }
+    @DeleteMapping("/delete-image")
+    public String deleteimage(@RequestParam("productId") String encryptedProductId){
+        try{
+            String productId= AESUtil.decrypt(encryptedProductId);
+
+        }catch (Exception e){
+
+        }
+
     }
 
 }
