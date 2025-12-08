@@ -1,13 +1,21 @@
 package com.example.TestDemoApplication.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Cart")
 public class Cart {
+    public String getCartItemId() {
+        return cartItemId;
+    }
+
+    public void setCartItemId(String cartItemId) {
+        this.cartItemId = cartItemId;
+    }
+
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String cartItemId;
     private String cartId;
     private String userId;
     private String productId;

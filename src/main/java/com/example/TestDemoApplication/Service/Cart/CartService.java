@@ -2,6 +2,7 @@ package com.example.TestDemoApplication.Service.Cart;
 
 import com.example.TestDemoApplication.Config.AESUtil;
 import com.example.TestDemoApplication.DTO.Cart.CartDto;
+import com.example.TestDemoApplication.DTO.User.UserRegisterDTO;
 import com.example.TestDemoApplication.Entity.Cart;
 import com.example.TestDemoApplication.Entity.UserAuth;
 import com.example.TestDemoApplication.Repository.CartRepository;
@@ -9,9 +10,12 @@ import com.example.TestDemoApplication.Repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -33,18 +37,16 @@ public class CartService {
         }
         return sb.toString();
     }
-
     private String validateCartId(String cartId) {
-        Optional<Cart> cartEntity = cartRepository.findById(cartId);
+        List<Cart> cartEntity = cartRepository.findByCartId(cartId);
         Optional<UserAuth> userAuthEntity= userRepository.findById(cartId);
-        while(cartEntity.isPresent() || userAuthEntity.isPresent()) {
+        while(!cartEntity.isEmpty() || userAuthEntity.isPresent()) {
             cartId = generateCartId();
-            cartEntity = cartRepository.findById(cartId);
+            cartEntity = cartRepository.findByCartId(cartId);;
             userAuthEntity=userRepository.findById(cartId);
         }
         return cartId;
     }
-
     public String addInCart(CartDto dto, HttpServletRequest request, HttpServletResponse response){
         try{
             Cart cart= new Cart();
@@ -56,7 +58,7 @@ public class CartService {
             if(request.getCookies()!=null){
                 for(Cookie cookie: request.getCookies()){
                     if("Cart Id".equals(cookie.getName())){
-                        cartId=cookie.getName();
+                        cartId = cookie.getValue();
                         break;
                     }
                 }
@@ -90,7 +92,7 @@ public class CartService {
                     Cart cartq = existingCartItem.get();
                     Long currentQty = cartq.getQuantity();
                     cartq.setQuantity(currentQty + quantity);   // add quantity to existing one
-                    cartRepository.save(cart);
+                    cartRepository.save(cartq);
                 }else{
                     // item add for Guest
                     cart.setCartId(cartId);
@@ -103,10 +105,8 @@ public class CartService {
 
             }
         }catch(Exception e){
-
         }
         return "Item added in your cart";
-
     }
 
     public String deleteItemFromCart(String cartId, String productId) {
@@ -124,15 +124,13 @@ public class CartService {
             return "Invalid product id or cartid"+e.getMessage();
         }
     }
-    public boolean decereseQuantity(String cartId, String productId){
-        try{
-            cartId= AESUtil.decrypt(cartId);
-            productId= AESUtil.decrypt(productId);
-            Optional<Cart> cart= cartRepository.findByCartIdAndProductId(cartId,productId);
 
+    public List<Cart> getCarts(String cartId) {
+        try{
+            cartId = AESUtil.decrypt(cartId);
         }catch(Exception e){
-            return true;
+
         }
-        return true;
+        return cartRepository.findByCartId(cartId);
     }
 }

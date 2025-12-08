@@ -1,6 +1,13 @@
 package com.example.TestDemoApplication.DTO.Cart;
 
 public class CartDto {
+    public String getCartItemId() {
+        return cartItemId;
+    }
+
+    public void setCartItemId(String cartItemId) {
+        this.cartItemId = cartItemId;
+    }
     public String getCartId() {
         return cartId;
     }
@@ -40,7 +47,7 @@ public class CartDto {
     public void setPrice(Long price) {
         this.price = price;
     }
-
+    private String cartItemId;
     private String cartId;
     private String userId;
     private String productId;
