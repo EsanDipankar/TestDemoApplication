@@ -223,7 +223,6 @@ public class ProductService {
         productList.addAll(productRepository.findByCategoryContainingIgnoreCase(keyword));
         productList.addAll(productRepository.findBySubCategoryContainingIgnoreCase(keyword));
         productList=productList.stream().distinct().toList();
-
         return productList.stream().map(product-> convertToEncryptedDTO(product)).toList();
     }
     public List<ProductResponseDTO>  getProduct(){
@@ -232,7 +231,6 @@ public class ProductService {
         for(Product product: productList){
             ProductResponseDTO response = new ProductResponseDTO();
             ProductDTO dto = convertToProductDTO(product);
-
             List<ImageEntity> images = imageRepository.findByProductId(product.getId());
             List<ImageDTO> imageDTOs = images.stream()
                     .map(img -> new ImageDTO(img.getId(), img.getProductId(), img.getImageName(), img.getSortOrder()))
@@ -266,4 +264,35 @@ public class ProductService {
         return  dto;
     }
 
+    public List<ProductResponseDTO> getProductUsingCategory(String productCategory) {
+        List<Product> products= productRepository.findByCategoryContainingIgnoreCase(productCategory);
+        List<ProductResponseDTO> result= new ArrayList<>();
+        for(Product prod:products){
+            ProductResponseDTO response = new ProductResponseDTO();
+            ProductDTO dto = convertToProductDTO(prod);
+            List<ImageEntity> images = imageRepository.findByProductId(prod.getId());
+            List<ImageDTO> imageDTOS=images.stream()
+                    .map(img->new ImageDTO(img.getId(), img.getProductId(), img.getImageName(),img.getSortOrder()))
+                    .collect(Collectors.toList());
+            response.setProduct(dto);
+            response.setImages(imageDTOS);
+            result.add(response);
+        }
+        return result;
+    }
+
+    public List<ProductResponseDTO> filterProductByPrice(Long price) {
+        List<Product> products= productRepository.findByPriceLessThanEqual(price);
+        List<ProductResponseDTO> result= new ArrayList<>();
+        for(Product product:products){
+            ProductResponseDTO productResponseDTO1= new ProductResponseDTO();
+            ProductDTO productDTO= convertToProductDTO(product);
+            List<ImageEntity>images= imageRepository.findByProductId(product.getId());
+            List<ImageDTO> imagedtos= images.stream().map(img-> new ImageDTO(img.getId(),img.getProductId(), img.getImageName(), img.getSortOrder())).collect(Collectors.toList());
+            productResponseDTO1.setImages(imagedtos);
+            productResponseDTO1.setProduct(productDTO);
+            result.add(productResponseDTO1);
+        }
+        return result;
+    }
 }

@@ -8,6 +8,10 @@ public class ImageDTO {
     private String imageName;
 
     public ImageDTO(Long id, String productId, String imageName, Integer sortOrder) {
+        this.id=id;
+        this.productId=productId;
+        this.imageName=imageName;
+        this.sortOrder=sortOrder;
     }
 
     public Integer getSortOrder() {
