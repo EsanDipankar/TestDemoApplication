@@ -14,6 +14,7 @@ public class OrderController {
 
     @RequestMapping("/orderSingleProduct")
     public String orderSingleProduct(@RequestParam String productId, @RequestParam String userId){
-        return orderService.orderProduct(productId,userId);
+        double amount=4000000;
+        return orderService.orderProduct(productId,userId, amount);
     }
 }
