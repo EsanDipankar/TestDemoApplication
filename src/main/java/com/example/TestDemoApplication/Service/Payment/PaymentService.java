@@ -1,11 +1,17 @@
 package com.example.TestDemoApplication.Service.Payment;
 
+import com.example.TestDemoApplication.Entity.PaymentInitiationResult;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.ErrorManager;
+
 @Service
+@Slf4j
 public class PaymentService {
 
     private RazorpayClient client;
@@ -17,30 +23,44 @@ public class PaymentService {
         );
     }
 
-    public String initiatePayment(String orderId, String userId,double amount) {
+    public PaymentInitiationResult initiatePayment(String orderId, String userId, long amountPaise) {
+
         try {
-            // Create Payment Order body
             JSONObject paymentRequest = new JSONObject();
-            paymentRequest.put("amount", amount*100);   // ₹500.00 (amount must be in paise)
+            paymentRequest.put("amount", amountPaise);      // e.g. 50000 = ₹500
             paymentRequest.put("currency", "INR");
             paymentRequest.put("receipt", orderId);
-            paymentRequest.put("payment_capture", 1); // auto capture
+            paymentRequest.put("payment_capture", 1);
 
-            // Calling Razorpay to create order
+            // Create order on Razorpay
             Order razorpayOrder = client.orders.create(paymentRequest);
 
-            // Extract Razorpay orderId
             String razorpayOrderId = razorpayOrder.get("id");
 
-            System.out.println("Razorpay Order Created: " + razorpayOrderId);
+            // ❗ Save (orderId → razorpayOrderId) mapping to DB (you will implement it)
+            // saveOrderMapping(orderId, razorpayOrderId, userId);
 
-            // In real project → save this razorpayOrderId in DB with your orderId
+            return new PaymentInitiationResult(
+                    true,
+                    razorpayOrderId,
+                    "Razorpay order created successfully"
+            );
 
-            return "SUCCESS";  // if order creation is successful
-
+        } catch (RazorpayException e) {
+            log.error("Razorpay API error", e);
+            return new PaymentInitiationResult(
+                    false,
+                    null,
+                    "Payment provider error: " + e.getMessage()
+            );
         } catch (Exception e) {
-            e.printStackTrace();
-            return "FAILED";
+            log.error("Unexpected internal error", e);
+            return new PaymentInitiationResult(
+                    false,
+                    null,
+                    "Internal server error"
+            );
         }
     }
+
 }
