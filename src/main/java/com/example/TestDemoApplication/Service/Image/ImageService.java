@@ -71,7 +71,7 @@ public class ImageService {
                 String fileName = image.getImageName();
 
                 // Create URL for frontend
-                String imageUrl = "http://localhost:8080/uploads/products/" + productId + "/" + fileName;
+                String imageUrl = "http://localhost:8082/uploads/products/" + productId + "/" + fileName;
 
                 imageUrls.add(imageUrl);
             }
