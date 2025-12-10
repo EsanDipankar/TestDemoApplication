@@ -23,15 +23,15 @@ public class ImageController {
     public List<String> getImages(@RequestParam("productId") String encryptedProductId) {
         return imageService.getImages(encryptedProductId);
     }
-    @DeleteMapping("/delete-image")
-    public String deleteimage(@RequestParam("productId") String encryptedProductId){
-        try{
-            String productId= AESUtil.decrypt(encryptedProductId);
-
-        }catch (Exception e){
-
-        }
-
-    }
+//    @DeleteMapping("/delete-image")
+//    public String deleteimage(@RequestParam("productId") String encryptedProductId){
+//        try{
+//            String productId= AESUtil.decrypt(encryptedProductId);
+//
+//        }catch (Exception e){
+//
+//        }
+//
+//    }
 
 }

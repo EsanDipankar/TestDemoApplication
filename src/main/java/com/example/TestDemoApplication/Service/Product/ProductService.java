@@ -11,7 +11,6 @@ import com.example.TestDemoApplication.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,7 @@ public class ProductService {
             Product product = new Product();
 
             // ID (String)
-            product.setId(AESUtil.decrypt(dto.getId()));
+            product.setProductId(AESUtil.decrypt(dto.getId()));
 
             // Strings
             product.setProductName(AESUtil.decrypt(dto.getProductName()));
@@ -154,7 +153,7 @@ public class ProductService {
             ProductDTO dto = new ProductDTO();
 
             // Encrypt before sending
-            dto.setId(AESUtil.encrypt(product.getId()));
+            dto.setId(AESUtil.encrypt(product.getProductId()));
             dto.setProductName(AESUtil.encrypt(product.getProductName()));
             dto.setCategory(AESUtil.encrypt(product.getCategory()));
             dto.setSubCategory(AESUtil.encrypt(product.getSubCategory()));
@@ -193,7 +192,7 @@ public class ProductService {
     private ProductDTO convertToEncryptedDTO(Product p) {
         ProductDTO dto = new ProductDTO();
         try{
-            dto.setId(AESUtil.encrypt(String.valueOf(p.getId())));
+            dto.setId(AESUtil.encrypt(String.valueOf(p.getProductId())));
             dto.setProductName(AESUtil.encrypt(p.getProductName()));
             dto.setCategory(AESUtil.encrypt(p.getCategory()));
             dto.setSubCategory(AESUtil.encrypt(p.getSubCategory()));
@@ -230,7 +229,7 @@ public class ProductService {
         for(Product product: productList){
             ProductResponseDTO response = new ProductResponseDTO();
             ProductDTO dto = convertToProductDTO(product);
-            List<ImageEntity> images = imageRepository.findByProductId(product.getId());
+            List<ImageEntity> images = imageRepository.findByProductId(product.getProductId());
             List<ImageDTO> imageDTOs = images.stream()
                     .map(img -> new ImageDTO(img.getId(), img.getProductId(), img.getImageName(), img.getSortOrder()))
                     .collect(Collectors.toList());
@@ -243,7 +242,7 @@ public class ProductService {
 
     private ProductDTO convertToProductDTO(Product product) {
         ProductDTO dto = new ProductDTO();
-        dto.setId(product.getId());
+        dto.setId(product.getProductId());
         dto.setProductName(product.getProductName());
         dto.setCategory(product.getCategory());
         dto.setSubCategory(product.getSubCategory());
@@ -269,7 +268,7 @@ public class ProductService {
         for(Product prod:products){
             ProductResponseDTO response = new ProductResponseDTO();
             ProductDTO dto = convertToProductDTO(prod);
-            List<ImageEntity> images = imageRepository.findByProductId(prod.getId());
+            List<ImageEntity> images = imageRepository.findByProductId(prod.getProductId());
             List<ImageDTO> imageDTOS=images.stream()
                     .map(img->new ImageDTO(img.getId(), img.getProductId(), img.getImageName(),img.getSortOrder()))
                     .collect(Collectors.toList());
@@ -286,7 +285,7 @@ public class ProductService {
         for(Product product:products){
             ProductResponseDTO productResponseDTO1= new ProductResponseDTO();
             ProductDTO productDTO= convertToProductDTO(product);
-            List<ImageEntity>images= imageRepository.findByProductId(product.getId());
+            List<ImageEntity>images= imageRepository.findByProductId(product.getProductId());
             List<ImageDTO> imagedtos= images.stream().map(img-> new ImageDTO(img.getId(),img.getProductId(), img.getImageName(), img.getSortOrder())).collect(Collectors.toList());
             productResponseDTO1.setImages(imagedtos);
             productResponseDTO1.setProduct(productDTO);

@@ -7,20 +7,12 @@ import jakarta.persistence.Table;
 @Table(name="Product")
 public class Product {
     @Id
-    private String Id;
+    private String productId;
 
     private String productName;
     private String category;
     private String subCategory;
     private Long price;
-
-    public String getSellerId() {
-        return sellerId;
-    }
-
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
-    }
 
     private String sellerId;
     private String sellerName;
@@ -34,12 +26,21 @@ public class Product {
     private Long rating;
     private Long discount;
     private Long quantity;
-    public String getId() {
-        return Id;
+
+    public String getSellerId() {
+        return sellerId;
     }
 
-    public void setId(String id) {
-        Id = id;
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getProductName() {

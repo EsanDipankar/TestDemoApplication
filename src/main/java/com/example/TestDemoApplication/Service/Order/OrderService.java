@@ -1,31 +1,81 @@
 package com.example.TestDemoApplication.Service.Order;
 
+import com.example.TestDemoApplication.Entity.Order;
+import com.example.TestDemoApplication.Entity.OrderStatus;
+import com.example.TestDemoApplication.Entity.PaymentInitiationResult;
+import com.example.TestDemoApplication.Repository.OrderRepository;
+import com.example.TestDemoApplication.Service.Inventory.InventoryService;
+import com.example.TestDemoApplication.Service.Payment.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
+@Service
 public class OrderService {
+
     @Autowired
     private PaymentService paymentService;
-    public String orderProduct(String productId, String userId) {
-        if (productId == null || productId.isEmpty()) {
-            return "Product ID cannot be empty.";
-        }
 
-        if (userId == null || userId.isEmpty()) {
-            return "User ID cannot be empty.";
-        }
-        boolean inStock = checkProductStock(productId);
-        if(!inStock) {
-            return "Product is out of stock";
-        }
-        String paymentStatus = paymentService.initiatePayment(orderId, userId);
+    @Autowired
+    private InventoryService inventoryService;
 
-        // 5. Update final order status
-        if(paymentStatus.equals("SUCCESS")) {
-            updateOrderStatus(orderId, "CONFIRMED");
-            return "Order Confirmed! Order ID: " + orderId;
+    @Autowired
+    private OrderRepository orderRepository;
+
+    public PaymentInitiationResult  orderProduct(String productId, String userId, Long amount) {
+
+        // 1. Validate Inputs
+        if (productId == null || productId.isEmpty()) throw new RuntimeException("Invalid Product ID");
+        if (userId == null || userId.isEmpty()) throw new RuntimeException("Invalid User ID");
+
+        // 2. Check Stock
+        Long stock = inventoryService.checkProductStock(productId);
+        if (stock == null || stock <= 0) {
+            throw new RuntimeException("Product is out of stock");
+        }
+        // 3. Create internal Order
+        String internalOrderId = UUID.randomUUID().toString();
+        Order order = new Order();
+        order.setOrderId(internalOrderId);
+        order.setProductId(productId);
+        order.setUserId(userId);
+        order.setAmount(amount);
+        order.setStatus(OrderStatus.CREATED);
+
+        orderRepository.save(order);
+
+
+
+        // 4. Initiate Payment
+        PaymentInitiationResult paymentStatus = paymentService.initiatePayment(internalOrderId, userId, amount);
+
+        // 5. Update Razorpay order ID
+        PaymentInitiationResult paymentResult = paymentService.initiatePayment(internalOrderId, userId, amount);
+
+        order.setRazorpayOrderId(paymentResult.getRazorpayOrderId());
+        order.setStatus(OrderStatus.PAYMENT_PENDING);
+        orderRepository.save(order);
+
+        return paymentResult;
+    }
+
+    public void updateOrderStatusAfterPayment(String orderId, String status,
+                                              String paymentId, String signature) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (status.equals("SUCCESS")) {
+            order.setStatus(OrderStatus.CONFIRMED);
+            order.setRazorpayPaymentId(paymentId);
+            order.setRazorpaySignature(signature);
+
+            inventoryService.reduceStock(order.getProductId(), 1);
         } else {
-            updateOrderStatus(orderId, "PAYMENT_FAILED");
-            return "Payment Failed! Order ID: " + orderId;
+            order.setStatus(OrderStatus.PAYMENT_FAILED);
         }
+
+        orderRepository.save(order);
     }
 }
