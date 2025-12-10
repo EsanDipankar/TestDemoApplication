@@ -47,9 +47,6 @@ public class OrderService {
 
 
 
-        // 4. Initiate Payment
-        PaymentInitiationResult paymentStatus = paymentService.initiatePayment(internalOrderId, userId, amount);
-
         // 5. Update Razorpay order ID
         PaymentInitiationResult paymentResult = paymentService.initiatePayment(internalOrderId, userId, amount);
 

@@ -14,30 +14,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/Order")
 public class OrderController {
+
     @Autowired
-    public OrderService orderService;
+    private OrderService orderService;
 
     @Autowired
     private ProductRepository productRepository;
 
-    @PostMapping("/orderSingleProduct") // Use POST for order creation
+    @PostMapping("/orderSingleProduct")
     public PaymentInitiationResult orderSingleProduct(
             @RequestParam String productId,
             @RequestParam String userId) {
-        try{
-            String prodId= AESUtil.decrypt(productId);
-            String usrId=AESUtil.decrypt(userId);
+
+        try {
+            // 1. Decrypt incoming IDs
+            String prodId = AESUtil.decrypt(productId);
+            String usrId  = AESUtil.decrypt(userId);
+
+            // 2. Fetch product details
             Product product = productRepository.findById(prodId)
                     .orElseThrow(() -> new RuntimeException("Product not found"));
 
-            Long amount = product.getPrice(); // Get product price
-            return orderService.orderProduct(productId, userId, amount);
-        }catch (Exception e){
+            // 3. Extract product amount
+            Long amount = product.getPrice(); // amount must be in paise
+
+            // 4. Call OrderService with decrypted IDs
+            return orderService.orderProduct(prodId, usrId, amount);
+
+        } catch (Exception e) {
             e.printStackTrace();
-            // Return failed PaymentInitiationResult
             return new PaymentInitiationResult(false, null, "Error: " + e.getMessage());
         }
-
-
     }
 }
