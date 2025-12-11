@@ -75,4 +75,28 @@ public class OrderService {
 
         orderRepository.save(order);
     }
+    public boolean verifySignature(String razorpayOrderId, String razorpayPaymentId, String razorpaySignature) {
+        return paymentService.verifySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+    }
+    public void updateOrderOnPaymentSuccess(String razorpayOrderId, String paymentId) {
+
+        Order order = orderRepository.findAll()
+                .stream()
+                .filter(o -> razorpayOrderId.equals(o.getRazorpayOrderId()))
+                .findFirst()
+                .orElse(null);
+
+        if (order == null) {
+            throw new RuntimeException("Order Not Found using razorpayOrderId");
+        }
+
+        // Update order status
+        order.setRazorpayPaymentId(paymentId);
+        order.setStatus(OrderStatus.CONFIRMED);
+
+        // Reduce product stock
+        inventoryService.reduceStock(order.getProductId(), 1);
+
+        orderRepository.save(order);
+    }
 }

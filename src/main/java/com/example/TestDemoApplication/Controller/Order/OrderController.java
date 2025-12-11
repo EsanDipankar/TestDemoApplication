@@ -46,4 +46,22 @@ public class OrderController {
             return new PaymentInitiationResult(false, null, "Error: " + e.getMessage());
         }
     }
+
+    @PostMapping("/verifyPayment")
+    public String verifyPayment(
+            @RequestParam String razorpayOrderId,
+            @RequestParam String razorpayPaymentId,
+            @RequestParam String razorpaySignature) {
+
+        boolean isValid = orderService.verifySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+
+        if (isValid) {
+            orderService.updateOrderOnPaymentSuccess(razorpayOrderId, razorpayPaymentId);
+            return "Payment Verified Successfully";
+        } else {
+            return "Payment Verification Failed";
+        }
+    }
+
+
 }
