@@ -81,6 +81,11 @@ public class ImageService {
             throw new RuntimeException("Failed to fetch images: " + e.getMessage());
         }
     }
+    public String deleteImagesByProductId(String productId){
+
+        return "";
+
+    }
 
 }
 
