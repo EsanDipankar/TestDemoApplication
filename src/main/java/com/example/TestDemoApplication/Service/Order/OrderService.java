@@ -57,24 +57,6 @@ public class OrderService {
         return paymentResult;
     }
 
-    public void updateOrderStatusAfterPayment(String orderId, String status,
-                                              String paymentId, String signature) {
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        if (status.equals("SUCCESS")) {
-            order.setStatus(OrderStatus.CONFIRMED);
-            order.setRazorpayPaymentId(paymentId);
-            order.setRazorpaySignature(signature);
-
-            inventoryService.reduceStock(order.getProductId(), 1);
-        } else {
-            order.setStatus(OrderStatus.PAYMENT_FAILED);
-        }
-
-        orderRepository.save(order);
-    }
     public boolean verifySignature(String razorpayOrderId, String razorpayPaymentId, String razorpaySignature) {
         return paymentService.verifySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
     }
